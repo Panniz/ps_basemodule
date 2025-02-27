@@ -1,0 +1,21 @@
+{
+    "name": "panniz/ps_basemodule",
+    "description": "Base Prestashop Module",
+    "version": "1.0.0",
+    "type": "prestashop-module",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Panniz\\PsBaseModule\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jacopo Zane",
+            "email": "jacopo.zane@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    }
+}

@@ -1,0 +1,6 @@
+vendor
+node_modules
+.vscode
+views/css
+views/js
+views/img
