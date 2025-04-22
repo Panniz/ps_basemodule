@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Panniz\PsBaseModule\Hook;
 
+use Panniz\PsBaseModule\AbstractModule;
+
 class HookDispatcher
 {
-    protected HookProvider $hookProvider;
-
-    public function __construct(HookProvider $hookProvider)
+    public function __construct(private HookProvider $hookProvider)
     {
-        $this->hookProvider = $hookProvider;
     }
 
     /**
@@ -21,15 +20,12 @@ class HookDispatcher
      *
      * @return mixed
      */
-    public function dispatch(string $hookName, array $params = [])
+    public function dispatch(string $hookName, AbstractModule $module, array ...$params)
     {
-        $hookClassName = ucfirst(preg_replace('~^hook~', '', $hookName));
-        $hookObj = $this->hookProvider->getHook($hookClassName);
+        $hookObj = $this->hookProvider->getHook($hookName);
 
         if ($hookObj !== null) {
-            return $hookObj->exec($params);
+            return $hookObj->exec($module, $params);
         }
-
-        return;
     }
 }
