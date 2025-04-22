@@ -1,38 +1,44 @@
 <?php
 namespace Panniz\PsBaseModule\Hook;
 
-use Panniz\PsBaseModule\AbstractModule;
-use Panniz\PsBaseModule\ModuleInterface;
-
+/**
+ * @
+ * @package Panniz\PsBaseModule\Hook
+ */
 class HookProvider
 {
-    private array $hooks;
-
-    public function __construct(private AbstractModule $module, array $hooksNames)
+    /** @var array<string, HookInterface> */
+    private array $hooks = [];
+    public function __construct(array $hooks)
     {
-        foreach($hooksNames as $hookName) {
-            $this->addHook($hookName);
+        foreach($hooks as $hook) {
+            $this->assertIsHook($hook);
+            /** @var HookInterface $hook */
+            $this->addHook($hook);
         }
     }
+
+    public function getHooksNames(): array
+    {
+        return array_keys($this->hooks);
+    }
+
     public function getHook(string $hookName): ?HookInterface
     {
-        if(isset($this->hooks[$hookName])) {
-            return new $this->hooks[$hookName]($this->module);
-        }
-
-        return null;
+        return $this->hooks[$hookName] ?? null;
     }
 
-    public function addHook(string $hookClassName): self
+    public function addHook(HookInterface $hook): self
     {
-        if(!\class_exists($hookClassName) || !\class_implements($hookClassName, HookInterface::class)) {
-            throw new \InvalidArgumentException('Hook must implement HookInterface');
-        }
-
-        $reflection = new \ReflectionClass($hookClassName);
-
-        $this->hooks[$reflection->getShortName()] = $hookClassName;
+        $this->hooks[$hook->getHookName()] = $hook;
 
         return $this;
+    }
+
+    private function assertIsHook(mixed $hook): void
+    {
+        if (!$hook instanceof HookInterface) {
+            throw new \InvalidArgumentException(sprintf('Hook must implement %s', HookInterface::class));
+        }
     }
 }

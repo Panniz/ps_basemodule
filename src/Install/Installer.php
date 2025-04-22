@@ -2,27 +2,26 @@
 
 namespace Panniz\PsBaseModule\Install;
 
-use Db;
 use Panniz\PsBaseModule\ModuleInterface;
 
 class Installer
 {
-    public static function install(ModuleInterface $module): bool
+    public static function install(DbInterface $db, ModuleInterface $module, array $hooks, array $queries): bool
     {
         return
-            (bool)$module->registerHook(array_keys($module->getHooks())) &&
-            self::executeQueries($module->getInstallQueries());
+            (bool)$module->registerHook($hooks) &&
+            self::executeQueries($db, $queries);
     }
 
-    public static function uninstall(ModuleInterface $module): bool
+    public static function uninstall(DbInterface $db, array $queries): bool
     {
-        return self::executeQueries($module->getUninstallQueries());
+        return self::executeQueries($db, $queries);
     }
 
-    private static function executeQueries(array $queries): bool
+    private static function executeQueries(DbInterface $db, array $queries): bool
     {
         foreach ($queries as $query) {
-            if (!Db::getInstance()->execute($query)) {
+            if (!$db->execute((string)$query)) {
                 return false;
             }
         }
